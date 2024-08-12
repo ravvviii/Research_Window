@@ -30,7 +30,7 @@ function Signup() {
     try {
       const userDetails = await account.create('unique()', email, password, name);
       console.log('User registered:', userDetails);
-      navigate('/dashboard'); // Navigate to dashboard on successful registration
+      navigate('/login'); // Navigate to dashboard on successful registration
     } catch (error) {
       console.error('Registration error:', error);
       throw error; // Rethrow the error to be caught in handleSubmit
@@ -75,6 +75,10 @@ function Signup() {
           </div>
           <button type="submit" className="signup-btn">Sign Up</button>
         </form>
+        <div className="signup-link">
+            <p>Already have account?</p>
+            <a href="/login" className="signup-btn-link">Login</a>
+          </div>
       </div>
     </div>
   );

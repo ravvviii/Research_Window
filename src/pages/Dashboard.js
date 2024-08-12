@@ -65,7 +65,7 @@ function Dashboard() {
               <button className="logout-btn" onClick={onLogout}>Logout</button>
 
               <div className="todo-section">
-                <h3>Your Todos</h3>
+                <h3>Your papers</h3>
                 <input 
                   type="text" 
                   placeholder="Add a new todo" 
@@ -73,7 +73,7 @@ function Dashboard() {
                   onChange={handleTodoChange}
                   className="todo-input"
                 />
-                <button className="add-todo-btn" onClick={handleAddTodo}>Add Todo</button>
+                <button className="add-todo-btn" onClick={handleAddTodo}>Add papers</button>
                 <ul className="todo-list">
                   {todos.map((item, index) => (
                     <li key={index} className="todo-item">{item}</li>

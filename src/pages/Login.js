@@ -63,6 +63,10 @@ function Login() {
             />
           </div>
           <button type="submit" className="login-btn">Login</button>
+          <div className="signup-link">
+            <p>Don't have an account?</p>
+            <a href="/signup" className="signup-btn-link">Create one</a>
+          </div>
         </form>
       </div>
     </div>
