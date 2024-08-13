@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ClipLoader } from 'react-spinners';
 import { account } from '../appwrite/config';
 
 function Dashboard() {
@@ -11,12 +12,15 @@ function Dashboard() {
   const [todos, setTodos] = useState([]);
 
   const onLogout = async () => {
+    setLoading(true); // Set loading to true before logging out
     try {
       await account.deleteSession('current');
       navigate('/login');
     } catch (error) {
       console.error('Logout error:', error);
       alert('Error logging out. Please try again.');
+    } finally {
+      setLoading(false); // Set loading to false after the logout process completes
     }
   };
 
@@ -32,7 +36,7 @@ function Dashboard() {
         console.error('Fetch user error:', error);
         navigate('/login');
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading to false after checking login status
       }
     };
 
@@ -55,7 +59,7 @@ function Dashboard() {
   return (
     <div className="dashboard-container">
       {loading ? (
-        <div className="loading">Loading your dashboard...</div>
+        <ClipLoader size={50} color={"#123abc"} loading={loading} />
       ) : (
         <>
           {email && name ? (
