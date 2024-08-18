@@ -1,32 +1,52 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ClipLoader } from 'react-spinners'; // Import ClipLoader from react-spinners
+import { ClipLoader } from 'react-spinners';
+import { Bounce, ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { account } from '../appwrite/config';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const notifyLogin = () => {
+    toast.success("Login Successful!", {
+      position: "top-center",
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      transition: Bounce,
+    });
+    console.log("Toast is working");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Reset error message
-    setLoading(true); // Start loading
+    setError('');
+    setLoading(true);
 
-    // Form validation
     if (email === '' || password === '') {
       setError('Please enter both email and password.');
-      setLoading(false); // Stop loading
+      setLoading(false);
       return;
     }
 
     try {
-      await login(); // Wait for login to complete
+      await login();
     } catch (error) {
-      setLoading(false); // Stop loading on error
-      setError('Email and password are incorrect.');
+      setLoading(false);
+      if (error.message.includes('Invalid credentials')) {
+        setError('Email and password are incorrect.');
+      } else {
+        setError('An unexpected error occurred. Please try again later.');
+      }
     }
   };
 
@@ -34,57 +54,64 @@ function Login() {
     try {
       const response = await account.createEmailPasswordSession(email, password);
       console.log('Login successful:', response);
-      navigate('/dashboard');
+      notifyLogin(); // Trigger the toast notification here
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1000); // Adjust the delay if needed
+      
     } catch (error) {
-      console.error('Login error:', error); // Log the error for debugging
-      if (error.message.includes('Invalid credentials')) {
-        setError('Email and password are incorrect.');
-      } else {
-        setError('An unexpected error occurred. Please try again later.');
-      }
-      throw error; // Rethrow the error to be caught in handleSubmit
+      console.error('Login error:', error);
+      throw error;
     } finally {
-      setLoading(false); // Stop loading once the login process is complete
+      setLoading(false);
     }
   };
 
   return (
     <div className="login-container">
-      {loading ? ( // Conditionally render the ClipLoader spinner
-        <ClipLoader size={50} color={"#123abc"} loading={loading} />
-      ) : (
-        <div className="login-form">
-          <h2>Login</h2>
-          {error && <p className="error-message">{error}</p>}
-          <form onSubmit={handleSubmit}>
-            <div className="input-group">
-              <label htmlFor="email">Email</label>
-              <input 
-                type="email" 
-                id="email" 
-                placeholder="Enter your email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="input-group">
-              <label htmlFor="password">Password</label>
-              <input 
-                type="password" 
-                id="password" 
-                placeholder="Enter your password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <button type="submit" className="login-btn">Login</button>
-            <div className="signup-link">
-              <p>Don't have an account?</p>
-              <a href="/signup" className="signup-btn-link">Create one</a>
-            </div>
-          </form>
-        </div>
-      )}
+      <div className="login-form">
+        <h2>Login</h2>
+        {error && <p className="error-message">{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="input-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <button type="submit" className="login-btn">
+            {loading ? <ClipLoader size={15} color={"white"} loading={loading} /> : 'Login'}
+          </button>
+          <a href="/signup" className="signup-btn-link">Create Account!</a>
+        </form>
+      </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={1000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
     </div>
   );
 }
